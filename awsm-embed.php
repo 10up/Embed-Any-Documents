@@ -24,7 +24,6 @@ class Awsm_embed {
 	private $plugin_file;
 	private $plugin_version;
 	private $settings_slug;
-	private $text_domain = 'embed-any-document';
 
 	/**
 	 * Creates or returns an instance of this class.
@@ -111,10 +110,10 @@ class Awsm_embed {
 		) );
 		// Prepare EAD icon
 		if ( $args['icon'] ) {
-			$args['icon'] = '<img src="' . $args['icon'] . '" /> ';
+			$args['icon'] = '<img src="' . esc_url( $args['icon'] ) . '" /> ';
 		}
 		// Print button in media column
-		$button = '<a href="javascript:void(0);" class="' . $args['class'] . '" title="' . $args['text'] . '" data-mfp-src="#embed-popup-wrap" data-target="' . $args['target'] . '" >' . $args['icon'] . $args['text'] . '</a>';
+		$button = '<a href="javascript:void(0);" class="' . esc_attr( $args['class'] ) . '" title="' . esc_attr( $args['text'] ) . '" data-mfp-src="#embed-popup-wrap" data-target="' . esc_attr( $args['target'] ) . '" >' . $args['icon'] . esc_html( $args['text'] ) . '</a>';
 		// Show generator popup
 		add_action( 'admin_footer', array( $this, 'embedpopup' ) );
 		// Request assets
@@ -134,7 +133,7 @@ class Awsm_embed {
 	 */
 	function settingslink( $links ) {
 
-		$settings_link = '<a href="options-general.php?page=' . $this->settings_slug . '">' . __( 'Settings', 'embed-any-document' ) . '</a>';
+		$settings_link = '<a href="options-general.php?page=' . esc_attr( $this->settings_slug ) . '">' . esc_html__( 'Settings', 'embed-any-document' ) . '</a>';
 		array_unshift( $links, $settings_link );
 
 		return $links;
@@ -191,36 +190,36 @@ class Awsm_embed {
 		$default_download = get_option( 'ead_download', 'none' );
 		$default_text     = get_option( 'ead_text', __( 'Download', 'embed-any-document' ) );
 		$show             = false;
-		extract( shortcode_atts( array(
-			                         'url'      => '',
-			                         'drive'    => '',
-			                         'width'    => $default_width,
-			                         'height'   => $default_height,
-			                         'language' => 'en',
-			                         'text'     => __( $default_text, 'embed-any-document' ),
-			                         'viewer'   => $default_provider,
-			                         'download' => $default_download,
-		                         ), $atts ) );
+		$shortcode_atts   = shortcode_atts( array(
+			                                    'url'      => '',
+			                                    'drive'    => '',
+			                                    'width'    => $default_width,
+			                                    'height'   => $default_height,
+			                                    'language' => 'en',
+			                                    'text'     => __( $default_text, 'embed-any-document' ),
+			                                    'viewer'   => $default_provider,
+			                                    'download' => $default_download,
+		                                    ), $atts );
 		if ( isset( $atts['provider'] ) ) {
 			$viewer = $atts['provider'];
 		}
 		if ( ! isset( $atts['provider'] ) AND ! isset( $atts['viewer'] ) ) {
 			$viewer = 'google';
 		}
-		if ( $url ):
-			$filedata    = wp_remote_head( $url );
+		if ( $shortcode_atts['url'] ):
+			$filedata    = wp_remote_head( $shortcode_atts['url'] );
 			$durl        = '';
 			$privatefile = '';
-			if ( $this->allowdownload( $viewer ) ) {
-				if ( $download == 'alluser' or $download == 'all' ) {
+			if ( $this->allowdownload( $shortcode_atts['viewer'] ) ) {
+				if ( $shortcode_atts['download'] === 'alluser' or $shortcode_atts['download'] === 'all' ) {
 					$show = true;
-				} elseif ( $download == 'logged' AND is_user_logged_in() ) {
+				} elseif ( $shortcode_atts['download'] === 'logged' AND is_user_logged_in() ) {
 					$show = true;
 				}
 			}
 			if ( $show ) {
 				$filesize = 0;
-				$url      = esc_url( $url, array( 'http', 'https' ) );
+				$url      = esc_url( $shortcode_atts['url'], array( 'http', 'https' ) );
 				if ( ! is_wp_error( $filedata ) && isset( $filedata['headers']['content-length'] ) ) {
 					$filesize = $this->human_filesize( $filedata['headers']['content-length'] );
 				} else {
@@ -230,7 +229,7 @@ class Awsm_embed {
 				if ( $filesize ) {
 					$fileHtml = ' [' . $filesize . ']';
 				}
-				$durl = '<p class="embed_download"><a href="' . $url . '" download >' . __( $text, 'embed-any-document' ) . $fileHtml . ' </a></p>';
+				$durl = '<p class="embed_download"><a href="' . esc_url( $url ) . '" download >' . __( $shortcode_atts['text'], 'embed-any-document' ) . $fileHtml . ' </a></p>';
 			}
 
 			$url          = esc_url( $url, array( 'http', 'https' ) );
@@ -238,10 +237,10 @@ class Awsm_embed {
 			if ( ! in_array( $viewer, $providerList ) ) {
 				$viewer = 'google';
 			}
-			switch ( $viewer ) {
+			switch ( $shortcode_atts['viewer'] ) {
 				case 'google':
 					$embedsrc = '//docs.google.com/viewer?url=%1$s&embedded=true&hl=%2$s';
-					$iframe   = sprintf( $embedsrc, urlencode( $url ), esc_attr( $language ) );
+					$iframe   = sprintf( $embedsrc, urlencode( $url ), esc_attr( $shortcode_atts['language'] ) );
 					break;
 
 				case 'microsoft':
@@ -250,14 +249,14 @@ class Awsm_embed {
 					break;
 			}
 			$min_height = '';
-			if ( $this->in_percentage( $height ) ) {
+			if ( $this->in_percentage(  $shortcode_atts['height'] ) ) {
 				$min_height = 'min-height:500px;';
 			}
-			if ( $this->check_responsive( $height ) AND $this->check_responsive( $width ) ) {
+			if ( $this->check_responsive(  $shortcode_atts['height'] ) AND $this->check_responsive(  $shortcode_atts['width'] ) ) {
 				$iframe_style = 'style="width:100%; height:100%; border: none; position: absolute;left:0;top:0;"';
 				$doc_style    = 'style="position:relative;padding-top:90%;"';
 			} else {
-				$iframe_style = sprintf( 'style="width:%s; height:%s; border: none;' . $min_height . '"', esc_html( $width ), esc_html( $height ) );
+				$iframe_style = sprintf( 'style="width:%s; height:%s; border: none;' . $min_height . '"', esc_html(  $shortcode_atts['width'] ), esc_html(  $shortcode_atts['height'] ) );
 				$doc_style    = 'style="position:relative;"';
 			}
 
@@ -265,7 +264,7 @@ class Awsm_embed {
 			$show   = false;
 			$embed  = '<div class="ead-preview"><div class="ead-document" ' . $doc_style . '>' . $iframe . $privatefile . '</div>' . $durl . '</div>';
 		else:
-			$embed = __( 'No Url Found', 'embed-any-document' );
+			$embed = esc_html__( 'No Url Found', 'embed-any-document' );
 		endif;
 
 		return $embed;
@@ -337,9 +336,9 @@ class Awsm_embed {
 
 		$link      = 'http://goo.gl/wJTQlc';
 		$id        = "";
-		$configure = '<span class="overlay"><strong>' . __( 'Buy Pro Version', 'embed-any-document' ) . '</strong><i></i></span>';
+		$configure = '<span class="overlay"><strong>' . esc_html__( 'Buy Pro Version', 'embed-any-document' ) . '</strong><i></i></span>';
 		$target    = 'target="_blank"';
-		echo '<a href="' . $link . '" id="' . $id . '" ' . $target . '><span><img src="' . $this->plugin_url . 'images/icon-' . strtolower( $provider ) . '.png" alt="' . sprintf( esc_html__( 'Add From %1$s', 'embed-any-document' ), $provider ) . '" />' . sprintf( esc_html__( 'Add From %1$s', 'embed-any-document' ), $provider ) . $configure . '</span></a>';
+		echo '<a href="' . $link . '" id="' . $id . '" ' . $target . '><span><img src="' . esc_url( $this->plugin_url ) . 'images/icon-' . strtolower( $provider ) . '.png" alt="' . sprintf( esc_html__( 'Add From %1$s', 'embed-any-document' ), $provider ) . '" />' . sprintf( esc_html__( 'Add From %1$s', 'embed-any-document' ), $provider ) . $configure . '</span></a>';
 	}
 
 	/**
@@ -373,16 +372,16 @@ class Awsm_embed {
 	function selectbuilder( $name, $options, $selected = "", $class = "" ) {
 
 		if ( is_array( $options ) ):
-			echo "<select name=\"$name\" id=\"$name\" class=\"$class\">";
+			echo "<select name=\"" . esc_attr( $name ) . "\" id=\"" . esc_attr( $name ) . "\" class=\"" . esc_attr( $class ) . "\">";
 			foreach ( $options as $key => $option ) {
-				echo "<option value=\"$key\"";
+				echo "<option value=\"" . esc_attr( $key ) . "\"";
 				if ( ! empty( $helptext ) ) {
-					echo " title=\"$helptext\"";
+					echo " title=\"" . esc_attr( $helptext ) . "\"";
 				}
 				if ( $key == $selected ) {
 					echo ' selected="selected"';
 				}
-				echo ">$option</option>\n";
+				echo ">" . esc_html( $option ) . "</option>\n";
 			}
 			echo '</select>';
 		else:
