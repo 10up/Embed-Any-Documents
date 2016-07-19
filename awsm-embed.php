@@ -86,7 +86,7 @@ class Awsm_embed {
 	 */
 	function load_textdomain() {
 
-		load_plugin_textdomain( $this->text_domain, false, $this->plugin_base . '/language/' );
+		load_plugin_textdomain( 'embed-any-document', false, $this->plugin_base . '/language/' );
 	}
 
 	/**
@@ -103,7 +103,7 @@ class Awsm_embed {
 		// Prepare args
 		$args = wp_parse_args( $args, array(
 			'target'    => $target,
-			'text'      => __( 'Add Document', $this->text_domain ),
+			'text'      => __( 'Add Document', 'embed-any-document' ),
 			'class'     => 'awsm-embed button',
 			'icon'      => plugins_url( 'images/ead-small.png', __FILE__ ),
 			'echo'      => true,
@@ -134,7 +134,7 @@ class Awsm_embed {
 	 */
 	function settingslink( $links ) {
 
-		$settings_link = '<a href="options-general.php?page=' . $this->settings_slug . '">' . __( 'Settings', $this->text_domain ) . '</a>';
+		$settings_link = '<a href="options-general.php?page=' . $this->settings_slug . '">' . __( 'Settings', 'embed-any-document' ) . '</a>';
 		array_unshift( $links, $settings_link );
 
 		return $links;
@@ -160,18 +160,18 @@ class Awsm_embed {
 			'height'        => get_option( 'ead_height', '100%' ),
 			'width'         => get_option( 'ead_width', '100%' ),
 			'download'      => get_option( 'ead_download', 'none' ),
-			'text'          => get_option( 'ead_text', __( 'Download', $this->text_domain ) ),
+			'text'          => get_option( 'ead_text', __( 'Download', 'embed-any-document' ) ),
 			'provider'      => get_option( 'ead_provider', 'google' ),
 			'ajaxurl'       => admin_url( 'admin-ajax.php' ),
 			'validtypes'    => $this->validembedtypes(),
 			'msextension'   => $this->validextensions( 'ms' ),
 			'drextension'   => $this->validextensions( 'all' ),
-			'nocontent'     => __( 'Nothing to insert', $this->text_domain ),
-			'invalidurl'    => __( 'Invalid URL', $this->text_domain ),
-			'addurl'        => __( 'Add URL', $this->text_domain ),
-			'verify'        => __( 'Verifying...', $this->text_domain ),
-			'from_url'      => __( 'From URL', $this->text_domain ),
-			'select_button' => __( 'Select', $this->text_domain ),
+			'nocontent'     => __( 'Nothing to insert', 'embed-any-document' ),
+			'invalidurl'    => __( 'Invalid URL', 'embed-any-document' ),
+			'addurl'        => __( 'Add URL', 'embed-any-document' ),
+			'verify'        => __( 'Verifying...', 'embed-any-document' ),
+			'from_url'      => __( 'From URL', 'embed-any-document' ),
+			'select_button' => __( 'Select', 'embed-any-document' ),
 
 		) );
 		wp_enqueue_style( 'embed-css' );
@@ -189,7 +189,7 @@ class Awsm_embed {
 		$default_height   = $this->sanitize_dims( get_option( 'ead_height', '100%' ) );
 		$default_provider = get_option( 'ead_provider', 'google' );
 		$default_download = get_option( 'ead_download', 'none' );
-		$default_text     = get_option( 'ead_text', __( 'Download', $this->text_domain ) );
+		$default_text     = get_option( 'ead_text', __( 'Download', 'embed-any-document' ) );
 		$show             = false;
 		extract( shortcode_atts( array(
 			                         'url'      => '',
@@ -197,7 +197,7 @@ class Awsm_embed {
 			                         'width'    => $default_width,
 			                         'height'   => $default_height,
 			                         'language' => 'en',
-			                         'text'     => __( $default_text, $this->text_domain ),
+			                         'text'     => __( $default_text, 'embed-any-document' ),
 			                         'viewer'   => $default_provider,
 			                         'download' => $default_download,
 		                         ), $atts ) );
@@ -230,7 +230,7 @@ class Awsm_embed {
 				if ( $filesize ) {
 					$fileHtml = ' [' . $filesize . ']';
 				}
-				$durl = '<p class="embed_download"><a href="' . $url . '" download >' . __( $text, $this->text_domain ) . $fileHtml . ' </a></p>';
+				$durl = '<p class="embed_download"><a href="' . $url . '" download >' . __( $text, 'embed-any-document' ) . $fileHtml . ' </a></p>';
 			}
 
 			$url          = esc_url( $url, array( 'http', 'https' ) );
@@ -265,7 +265,7 @@ class Awsm_embed {
 			$show   = false;
 			$embed  = '<div class="ead-preview"><div class="ead-document" ' . $doc_style . '>' . $iframe . $privatefile . '</div>' . $durl . '</div>';
 		else:
-			$embed = __( 'No Url Found', $this->text_domain );
+			$embed = __( 'No Url Found', 'embed-any-document' );
 		endif;
 
 		return $embed;
@@ -337,9 +337,9 @@ class Awsm_embed {
 
 		$link      = 'http://goo.gl/wJTQlc';
 		$id        = "";
-		$configure = '<span class="overlay"><strong>' . __( 'Buy Pro Version', $this->text_domain ) . '</strong><i></i></span>';
+		$configure = '<span class="overlay"><strong>' . __( 'Buy Pro Version', 'embed-any-document' ) . '</strong><i></i></span>';
 		$target    = 'target="_blank"';
-		echo '<a href="' . $link . '" id="' . $id . '" ' . $target . '><span><img src="' . $this->plugin_url . 'images/icon-' . strtolower( $provider ) . '.png" alt="' . sprintf( esc_html__( 'Add From %1$s', $this->text_domain ), $provider ) . '" />' . sprintf( esc_html__( 'Add From %1$s', $this->text_domain ), $provider ) . $configure . '</span></a>';
+		echo '<a href="' . $link . '" id="' . $id . '" ' . $target . '><span><img src="' . $this->plugin_url . 'images/icon-' . strtolower( $provider ) . '.png" alt="' . sprintf( esc_html__( 'Add From %1$s', 'embed-any-document' ), $provider ) . '" />' . sprintf( esc_html__( 'Add From %1$s', 'embed-any-document' ), $provider ) . $configure . '</span></a>';
 	}
 
 	/**
