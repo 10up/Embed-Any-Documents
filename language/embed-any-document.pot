@@ -1,16 +1,15 @@
-#, fuzzy
 msgid ""
 msgstr ""
 "Project-Id-Version: Embed Any Document\n"
-"POT-Creation-Date: 2016-04-02 18:23+0530\n"
-"PO-Revision-Date: 2016-04-02 15:30+0530\n"
+"POT-Creation-Date: 2016-05-12 11:39+0530\n"
+"PO-Revision-Date: 2016-05-12 11:40+0530\n"
 "Last-Translator: \n"
 "Language-Team: Awsm Innovations <hello@awsm.in>\n"
 "Language: en\n"
 "MIME-Version: 1.0\n"
 "Content-Type: text/plain; charset=UTF-8\n"
 "Content-Transfer-Encoding: 8bit\n"
-"X-Generator: Poedit 1.8.5\n"
+"X-Generator: Poedit 1.6.10\n"
 "X-Poedit-Basepath: .\n"
 "Plural-Forms: nplurals=2; plural=(n != 1);\n"
 "X-Poedit-SourceCharset: UTF-8\n"
@@ -18,60 +17,52 @@ msgstr ""
 "X-Poedit-SearchPath-0: .\n"
 "X-Poedit-SearchPath-1: ..\n"
 
-#: ../awsm-embed.php:94 ../inc/popup.php:6
+#: ../aswm-embed.php:92 ../inc/popup.php:6
 msgid "Add Document"
 msgstr ""
 
-#: ../awsm-embed.php:118
+#: ../aswm-embed.php:116
 msgid "Settings"
 msgstr ""
 
-#: ../awsm-embed.php:139 ../awsm-embed.php:163
+#: ../aswm-embed.php:137 ../aswm-embed.php:164
 msgid "Download"
 msgstr ""
 
-#: ../awsm-embed.php:145
+#: ../aswm-embed.php:143
 msgid "Nothing to insert"
 msgstr ""
 
-#: ../awsm-embed.php:146
+#: ../aswm-embed.php:144
 msgid "Invalid URL"
 msgstr ""
 
-#: ../awsm-embed.php:147 ../inc/popup.php:22
+#: ../aswm-embed.php:145 ../inc/popup.php:22
 msgid "Add URL"
 msgstr ""
 
-#: ../awsm-embed.php:148
+#: ../aswm-embed.php:146
 msgid "Verifying..."
 msgstr ""
 
-#: ../awsm-embed.php:229
+#: ../aswm-embed.php:147
+msgid "From URL"
+msgstr ""
+
+#: ../aswm-embed.php:148
+msgid "Select"
+msgstr ""
+
+#: ../aswm-embed.php:230
 msgid "No Url Found"
 msgstr ""
 
-#: ../awsm-embed.php:243
+#: ../aswm-embed.php:244
 msgid "You do not have sufficient permissions to access this page."
 msgstr ""
 
-#: ../awsm-embed.php:288
+#: ../aswm-embed.php:289
 msgid "Buy Pro Version"
-msgstr ""
-
-#: ../awsm-embed.php:423
-msgid "Done"
-msgstr ""
-
-#: ../awsm-embed.php:428
-msgid "Document"
-msgstr ""
-
-#: ../awsm-embed.php:436
-msgid "File format is not supported."
-msgstr ""
-
-#: ../awsm-embed.php:443
-msgid "Sorry, the file URL is not valid."
 msgstr ""
 
 #: ../inc/popup.php:4

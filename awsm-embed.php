@@ -3,7 +3,7 @@
   Plugin Name: Embed Any Document
   Plugin URI: http://awsm.in/embed-any-documents
   Description: Embed Any Document WordPress plugin lets you upload and embed your documents easily in your WordPress website without any additional browser plugins like Flash or Acrobat reader. The plugin lets you choose between Google Docs Viewer and Microsoft Office Online to display your documents. 
-  Version: 2.2.3
+  Version: 2.2.5
   Author: Awsm Innovations
   Author URI: http://awsm.in
   License: GPL V3
@@ -43,7 +43,7 @@ class Awsm_embed {
 		$this->plugin_base  	=	dirname( plugin_basename( __FILE__ ) );
 		$this->plugin_file  	=	__FILE__  ;
 		$this->settings_slug	=	'ead-settings';
-		$this->plugin_version	=	'2.2.2';
+		$this->plugin_version	=	'2.2.5';
 
 		add_action( 'media_buttons', array( $this, 'embedbutton' ),1000);
 
@@ -54,8 +54,6 @@ class Awsm_embed {
 		add_action( 'admin_init', array( $this, 'register_eadsettings' ));
 		//Add easy settings link
 		add_filter( 'plugin_action_links_' . plugin_basename( __FILE__ ),array( $this, 'settingslink' ));
-		//ajax validate file url
-		add_action( 'wp_ajax_validateurl',array( $this, 'validateurl' ));
 		//ajax Contact Form
  		add_action( 'wp_ajax_supportform',array( $this, 'supportform' ));
  		//default options
@@ -146,6 +144,9 @@ class Awsm_embed {
 				'invalidurl'		=> 	__('Invalid URL', $this->text_domain),
 				'addurl'			=> 	__('Add URL', $this->text_domain),
 				'verify'			=> 	__('Verifying...', $this->text_domain),
+				'from_url'			=> 	__('From URL', $this->text_domain),
+				'select_button'		=> 	__('Select', $this->text_domain),
+				
 			) );
 		wp_enqueue_style('embed-css');
 		wp_enqueue_script( 'embed' );
@@ -357,7 +358,7 @@ class Awsm_embed {
 	    
 	    // remove any spacing junk
 	    $dim = trim(str_replace(" ", "", $dim));
-	    
+	    if(!$dim) $dim  = '100%';
 	    if (!strstr($dim, '%')) {
 	        $type = "px";
 	        $dim = preg_replace("/[^0-9]*/", '', $dim);
@@ -402,52 +403,6 @@ class Awsm_embed {
 		}
 		return false;
 	}
-	/**
-	 * Validate File url
-	 *
-	 * @since   1.0
-	 * @return  string Download link
-	 */
-	function validateurl() {
-	    $types = $this->validmime_types();
-	    $url = esc_url($_POST['furl'], array('http', 'https'));
-	    $remote = wp_remote_head($url);
-	    $json['status'] = false;
-	    $json['message'] = '';
-	    if (wp_remote_retrieve_response_code($remote) == 200) {
-	        //Gzip Support
-	        $filename = pathinfo($url);
-	        $doctypes = ead_validmimeTypes();
-	        if ($this->valid_type($url, $doctypes)) {
-	            $json['status'] = true;
-	            $json['message'] = __("Done", 'embed-any-document');
-	            $json['file']['url'] = $url;
-	            if (isset($filename)) {
-	                $json['file']['filename'] = $filename['basename'];
-	            } else {
-	                $json['file']['filename'] = __("Document", 'embed-any-document');
-	            }
-	            if (!is_wp_error($filedata) && isset($filedata['headers']['content-length'])) {
-	                $json['file']['filesizeHumanReadable'] = $this->human_filesize($remote['headers']['content-length']);
-	            } else {
-	                $json['file']['filesizeHumanReadable'] = 0;
-	            }
-	        } else {
-	            $json['message'] = __("File format is not supported.", 'embed-any-document');
-	            $json['status'] = false;
-	        }
-	    } elseif (is_wp_error($remote)) {
-	        $json['message'] = $remote->get_error_message();
-	        $json['status'] = false;
-	    } else {
-	        $json['message'] = __('Sorry, the file URL is not valid.', 'embed-any-document');
-	        $json['status'] = false;
-	    }
-	    
-		echo json_encode($json);
-		die(0);
-	     
-	}
  
 	/**
 	 * Validate Source mime type
@@ -467,7 +422,7 @@ class Awsm_embed {
 	 * @return  boolean
 	 */
 	function valid_type($url) {
-	    $doctypes = ead_validmimeTypes();
+	    $doctypes = $this->validmime_types();
 	    if (is_array($doctypes)) {
 	        $allowed_ext = implode("|", array_keys($doctypes));
 	        if (preg_match("/\.($allowed_ext)$/i", $url)) {
